@@ -1,0 +1,5 @@
+# zdf-dl let's you download video streams from the no-flash version
+# of the zdf mediathek to your harddisk using curl and mplayer
+# http://www.zdf.de/ZDFmediathek/hauptnavigation/startseite?flash=off
+# the download part is based on the work of Stefan Waidele
+# http://stefan.waidele.info/2010/05/18/zdf-mediathek-videos-herunterladen-download/
