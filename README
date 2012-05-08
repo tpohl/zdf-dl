@@ -25,5 +25,8 @@
 #  - mplayer
 
 ######### Changelog
+# Version 1.0.1
+#  - Get filename out of url
+#  - Fixed variables
 # Version 1.0
 #  - Initial Release
