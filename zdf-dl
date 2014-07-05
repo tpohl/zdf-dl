@@ -13,7 +13,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Get url to asx video stream out of the no flash version of the zdf mediathek
+######### About
+# zdf-dl let's you download video streams from the no-flash version
+# of the zdf mediathek to your harddisk using curl and mplayer
+# http://www.zdf.de/ZDFmediathek/hauptnavigation/startseite?flash=off
+
+######### Dependencies
+#  - Curl
+#  - xmlstarlet
+
+######### Changelog
+# Version 1.1
+#  - Adapted to current zdf mediatek (Thanks Markus!)
+#  - New dependency xmlstarlet
+# Version 1.0.2
+#  - Check if HTML-Version is used
+#  - Disabled lirc-support in mplayer, removing error message
+#  - Curl stuff before mplayer call not necessary
+# Version 1.0.1
+#  - Get filename out of url
+#  - Fixed variables
+# Version 1.0
+#  - Initial Release
+
+
+## Check for adb and imagemagick
+command -v curl >/dev/null 2>&1 || {
+        echo >&2 "Please install curl.  Aborting.";
+        exit 1;
+}
+
+command -v xmlstarlet >/dev/null 2>&1 || {
+        echo >&2 "Please install xmlstarlet.  Aborting.";
+        exit 1;
+}
+
+# Get url to video stream out of the no flash version of the zdf mediathek
 url_noflash="$1"
 url_stream=$(curl -s ${url_noflash} | grep asx | grep -o 'http://[^"]*')
 
@@ -27,13 +62,17 @@ then
 	exit
 fi
 
-# If filename is empty, get name out of url
-filename=$2
-if [ -z ${filename} ]; then
-	filename=$(echo ${url_noflash} | cut -d/ -f8- | cut -d? -f1)".wmv"
-fi 
-
+mov_id=$(echo "${url_noflash}" | grep -oP "(?<=http://www.zdf.de/ZDFmediathek/beitrag/video/)[^/]+")
+echo "Film id: ${mov_id}"
+ 
+url_xmlfile=$(echo "http://www.zdf.de/ZDFmediathek/xmlservice/web/beitragsDetails?id=${mov_id}")
+echo "Pfad xml-Datei: ${url_xmlfile}"
+ 
+xmlfile=$(curl -s ${url_xmlfile})
+ 
+# Extract from xml-file the elements "formitaet", then search for "veryhigh", then for filename pattern
+url_stream=$(echo ${xmlfile}  | xmlstarlet sel -t -m '//formitaet' -v . -n | grep -n1 'veryhigh' | grep -o 'http://rodl.zdf.de/none/zdf[^"]*.mp4')
+ 
 # Get stream and save it to disk
-echo "Lade ${filename} herunter, bitte haben Sie etwas Geduld..."
-mplayer -really-quiet -nolirc -playlist ${url_stream} -dumpstream -dumpfile ${filename}
-
+echo "Lade ${url_stream}  herunter, bitte haben Sie etwas Geduld..."
+wget -c ${url_stream}
