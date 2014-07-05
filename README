@@ -5,9 +5,12 @@
 
 ######### Dependencies
 #  - Curl
-#  - mplayer
+#  - xmlstarlet
 
 ######### Changelog
+# Version 1.1
+#  - Adapted to current zdf mediatek (Thanks Markus!)
+#  - New dependency xmlstarlet
 # Version 1.0.2
 #  - Check if HTML-Version is used
 #  - Disabled lirc-support in mplayer, removing error message
