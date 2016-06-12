@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# Version 0.0.1
+# @author: Thorsten Pohl
+
+# Parameters
+mediaId=$1
+BASEDIR=$(dirname $0)
+
+queryUrl="http://www.zdf.de/ZDFmediathek/xmlservice/web/aktuellste?id=$mediaId&maxLength=50"
+
+assetUrlService=$(curl -s ${queryUrl})
+
+#
+assetUrls=$(echo ${assetUrlService}  | xmlstarlet sel -T -t -m "/response/teaserlist/teasers/teaser/details[./ganzeSendung = 'true']" -v "concat(vcmsUrl,'?flash=off')" -n)
+
+#echo $assetUrls;
+
+while read i ; do $BASEDIR/zdf-dl $i ; done <<< "$assetUrls"
