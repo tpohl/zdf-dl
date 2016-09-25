@@ -72,7 +72,19 @@ xmlfile=$(curl -s ${url_xmlfile})
  
 # Extract from xml-file the elements "formitaet", then search for "veryhigh", then for filename pattern
 url_stream=$(echo ${xmlfile}  | xmlstarlet sel -t -m '//formitaet' -v . -n | grep -n1 'veryhigh' | grep -o 'http://rodl.zdf.de/none/zdf[^"]*.mp4')
- 
+
+# Extract title 
+title=$(echo ${xmlfile}  | xmlstarlet sel -t -m "/response/video/information/title" -v . -n)
+echo "Title: ${title}"
+
+teaser=$(echo ${xmlfile}  | xmlstarlet sel -t -m "/response/video/information/detail" -v . -n)
+echo "Teaser: ${teaser}"
+
+# The filename 
+filename=$(echo "${url_stream}" | sed 's/.*\/\([^\/]*\..*\)$/\1/g')
+
 # Get stream and save it to disk
-echo "Lade ${url_stream}  herunter, bitte haben Sie etwas Geduld..."
+echo "Lade ${url_stream} zu ${filename}  herunter, bitte haben Sie etwas Geduld..."
 wget -c ${url_stream}
+
+exiftool -title=$title -comment=$teaser $filename

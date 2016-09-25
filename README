@@ -7,6 +7,9 @@ Thorstens Additions:
 added multi-zdf-dl
 usage multi-zdf-dl 430 will download all Wilsberg Episodes
 
+Using exfitool to tag the files downloaded.
+sudo apt-get install libimage-exiftool-perl 
+
 ######### Dependencies
 #  - Curl
 #  - xmlstarlet
